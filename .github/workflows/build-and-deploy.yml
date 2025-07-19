@@ -17,7 +17,7 @@ jobs:
         with:
           repository: ManojAndroid/Social-Service
           ref: main                # ✅ explicitly mention the branch
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GH_PAT }}
           path: java-app
 
       - name: Set up Java
