@@ -14,11 +14,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # ✅ Checkout CI/CD Repo (this repo)
+      # ✅ Checkout CI/CD Repo (this repo with Dockerfile)
       - name: Checkout CI/CD Repo
         uses: actions/checkout@v3
         with:
-          token: ${{ secrets.GH_PAT }} # Needed if this repo is private
+          token: ${{ secrets.GH_PAT }}
 
       # ✅ Checkout Java App Repo
       - name: Checkout Java App Repo
@@ -29,33 +29,32 @@ jobs:
           token: ${{ secrets.GH_PAT }}
           path: java-app
 
-      # ✅ Setup Java 17
+      # ✅ Set up Java (optional since build is via Dockerfile, but useful for Maven step)
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
           java-version: '21'
           distribution: 'temurin'
 
-      # ✅ Build Java App with Maven
-      - name: Build Java App
+      # ✅ Optional: Pre-check Java app builds (good for debugging)
+      - name: Build Java App with Maven (Optional)
         run: |
           cd java-app
-          mvn clean package -DskipTests
+          mvn clean verify -DskipTests
 
-      # ✅ DockerHub Login
+      # ✅ Log in to DockerHub
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      # ✅ Set IMAGE_TAG as Git SHA
+      # ✅ Set IMAGE_TAG using Git SHA
       - name: Set IMAGE_TAG
         run: echo "IMAGE_TAG=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
-      # ✅ Build & Push Docker Image
+      # ✅ Build and Push Docker Image (from root Dockerfile, using java-app as source)
       - name: Build & Push Docker Image
         run: |
-          cd java-app
           docker build -t manojandroid/sso-service:${{ env.IMAGE_TAG }} .
           docker push manojandroid/sso-service:${{ env.IMAGE_TAG }}
