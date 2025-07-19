@@ -1,10 +1,12 @@
-name: Build & Deploy Java App
+name: 🚀 Build & Deploy Java App
 
 on:
   push:
     branches: [main]
 
 permissions:
+  contents: read
+  packages: write
   issues: write
 
 jobs:
@@ -12,37 +14,46 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # ✅ Checkout CI/CD Repo (this repo)
       - name: Checkout CI/CD Repo
         uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GH_PAT }} # Needed if this repo is private
 
+      # ✅ Checkout Java App Repo
       - name: Checkout Java App Repo
         uses: actions/checkout@v3
         with:
           repository: ManojAndroid/Social-Service
-          ref: main                # ✅ explicitly mention the branch
+          ref: main
           token: ${{ secrets.GH_PAT }}
           path: java-app
 
+      # ✅ Setup Java 17
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
 
+      # ✅ Build Java App with Maven
       - name: Build Java App
         run: |
           cd java-app
           mvn clean package -DskipTests
 
+      # ✅ DockerHub Login
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      # ✅ Set IMAGE_TAG as Git SHA
       - name: Set IMAGE_TAG
         run: echo "IMAGE_TAG=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
+      # ✅ Build & Push Docker Image
       - name: Build & Push Docker Image
         run: |
           cd java-app
