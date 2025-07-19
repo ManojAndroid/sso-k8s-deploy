@@ -45,4 +45,3 @@ jobs:
           cd java-app
           docker build -t manojandroid/social-service:${{ env.IMAGE_TAG }} .
           docker push manojandroid/social-service:${{ env.IMAGE_TAG }}
-s
