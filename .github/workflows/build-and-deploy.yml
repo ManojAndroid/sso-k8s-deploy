@@ -24,7 +24,7 @@ jobs:
       - name: Checkout Java App Repo
         uses: actions/checkout@v3
         with:
-          repository: ManojAndroid/Social-Service
+          repository: ManojAndroid/sso-service
           ref: master
           token: ${{ secrets.GH_PAT }}
           path: java-app
@@ -57,5 +57,5 @@ jobs:
       - name: Build & Push Docker Image
         run: |
           cd java-app
-          docker build -t manojandroid/social-service:${{ env.IMAGE_TAG }} .
-          docker push manojandroid/social-service:${{ env.IMAGE_TAG }}
+          docker build -t manojandroid/sso-service:${{ env.IMAGE_TAG }} .
+          docker push manojandroid/sso-service:${{ env.IMAGE_TAG }}
