@@ -9,7 +9,7 @@ COPY java-app/src ./src
 RUN mvn clean package -DskipTests
 
 # ---------- Runtime Stage ----------
-FROM openjdk:21-alpine
+FROM eclipse-temurin:21-jdk-alpine
 
 VOLUME /tmp
 
