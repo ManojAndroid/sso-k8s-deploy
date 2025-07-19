@@ -1,12 +1,8 @@
-name: 🚀 Test and Deploy
+name: Build & Deploy Java App
 
 on:
   push:
-    branches:
-      - release/1.0
-      - development
-      - main
-  workflow_dispatch:
+    branches: [main]
 
 permissions:
   issues: write
