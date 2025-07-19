@@ -25,7 +25,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: ManojAndroid/Social-Service
-          ref: main
+          ref: master
           token: ${{ secrets.GH_PAT }}
           path: java-app
 
