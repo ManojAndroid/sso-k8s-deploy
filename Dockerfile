@@ -1,4 +1,24 @@
+# ---------- Build Stage ----------
+FROM maven:3.9.6-eclipse-temurin-17-alpine AS build
+
+WORKDIR /app
+
+COPY java-app/pom.xml .
+COPY java-app/src ./src
+
+RUN mvn clean package -DskipTests
+
+# ---------- Runtime Stage ----------
 FROM openjdk:17-alpine
+
 VOLUME /tmp
-COPY java-app/target/sso-0.0.1-SNAPSHOT.jar app.jar
+
+COPY --from=build /app/target/*.jar app.jar
+
+ENV SERVER_PORT=8080 \
+    SPRING_PROFILES_ACTIVE=prod \
+    DB_URL=jdbc:mysql://mysql:3306/social \
+    DB_USERNAME=root \
+    DB_PASSWORD=secret
+
 ENTRYPOINT ["java", "-jar", "/app.jar"]
