@@ -15,10 +15,4 @@ VOLUME /tmp
 
 COPY --from=build /app/target/*.jar app.jar
 
-ENV SERVER_PORT=8080 \
-    SPRING_PROFILES_ACTIVE=prod \
-    DB_URL=jdbc:mysql://mysql:3306/sso_db \
-    DB_USERNAME=root \
-    DB_PASSWORD=root
-
 ENTRYPOINT ["java", "-jar", "/app.jar"]
