@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: social-service
-          image: testingmanoj/sso-service:dac697b
+          image: testingmanoj/sso-service:06df950
           ports:
             - containerPort: 8080
           env:
