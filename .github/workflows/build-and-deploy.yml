@@ -56,5 +56,5 @@ jobs:
       # ✅ Build and Push Docker Image (from root Dockerfile, using java-app as source)
       - name: Build & Push Docker Image
         run: |
-          docker build -t manojandroid/sso-service:${{ env.IMAGE_TAG }} .
-          docker push manojandroid/sso-service:${{ env.IMAGE_TAG }}
+          docker build -t testingmanoj/sso-service:${{ env.IMAGE_TAG }} .
+          docker push testingmanoj/sso-service:${{ env.IMAGE_TAG }}
