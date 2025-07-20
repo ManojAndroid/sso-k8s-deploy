@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: sso-service
-          image: testingmanoj/sso-service:0ba60ba
+          image: testingmanoj/sso-service:4d47417
           ports:
             - containerPort: 8080
           env:
