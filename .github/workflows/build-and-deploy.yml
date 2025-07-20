@@ -5,22 +5,21 @@ on:
     branches: [main]
 
 permissions:
-  contents: read
+  contents: write
   packages: write
-  issues: write
 
 jobs:
-  build-and-push:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # ✅ Checkout CI/CD Repo (this repo with Dockerfile)
+      # ✅ Checkout sso-k8s-deploy repo (this repo)
       - name: Checkout CI/CD Repo
         uses: actions/checkout@v3
         with:
           token: ${{ secrets.GH_PAT }}
 
-      # ✅ Checkout Java App Repo
+      # ✅ Checkout Java App Source
       - name: Checkout Java App Repo
         uses: actions/checkout@v3
         with:
@@ -29,32 +28,33 @@ jobs:
           token: ${{ secrets.GH_PAT }}
           path: java-app
 
-      # ✅ Set up Java (optional since build is via Dockerfile, but useful for Maven step)
-      - name: Set up Java
-        uses: actions/setup-java@v3
-        with:
-          java-version: '21'
-          distribution: 'temurin'
+      # ✅ Set IMAGE_TAG
+      - name: Set IMAGE_TAG
+        run: echo "IMAGE_TAG=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
-      # ✅ Optional: Pre-check Java app builds (good for debugging)
-      - name: Build Java App with Maven (Optional)
-        run: |
-          cd java-app
-          mvn clean verify -DskipTests
-
-      # ✅ Log in to DockerHub
-      - name: Login to DockerHub
+      # ✅ DockerHub Login
+      - name: Docker Login
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      # ✅ Set IMAGE_TAG using Git SHA
-      - name: Set IMAGE_TAG
-        run: echo "IMAGE_TAG=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-
-      # ✅ Build and Push Docker Image (from root Dockerfile, using java-app as source)
-      - name: Build & Push Docker Image
+      # ✅ Build & Push Image
+      - name: Build & Push Image
         run: |
           docker build -t testingmanoj/sso-service:${{ env.IMAGE_TAG }} .
           docker push testingmanoj/sso-service:${{ env.IMAGE_TAG }}
+
+      # ✅ Update deployment.yaml in k8s folder
+      - name: Update image in deployment.yaml
+        run: |
+          sed -i "s|image:.*|image: testingmanoj/sso-service:${{ env.IMAGE_TAG }}|" k8s/deployment.yaml
+
+      # ✅ Commit and Push
+      - name: Commit updated manifest
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add k8s/deployment.yaml
+          git commit -m "Update image tag to ${{ env.IMAGE_TAG }}"
+          git push origin main

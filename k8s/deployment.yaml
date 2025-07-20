@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: social-service
+  name: sso-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: social-service
+      app: sso-service
   template:
     metadata:
       labels:
-        app: social-service
+        app: sso-service
     spec:
       containers:
         - name: social-service
-          image: manojandroid/social-service:latest
+          image: mtestingmanoj/sso-service
           ports:
             - containerPort: 8080
           env:

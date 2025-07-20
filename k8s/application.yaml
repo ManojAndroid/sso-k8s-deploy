@@ -1,13 +1,13 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: social-service
+  name: sso-service
   namespace: argocd
 spec:
   project: default
   source:
-    repoURL: https://github.com/ManojAndroid/Social-Service.git
-    targetRevision: HEAD
+    repoURL: https://github.com/ManojAndroid/sso-k8s-deploy.git
+    targetRevision: main
     path: k8s
   destination:
     server: https://kubernetes.default.svc
